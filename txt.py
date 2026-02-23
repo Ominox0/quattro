@@ -457,3 +457,30 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+"""
+0 -> var reg (R0, R1, R2, ...)
+1 -> flag reg (ZERO, CARRY, ...)
+2 -> real number (0, 1, 2, ...)
+
+0 0 -> ADD
+0 1 -> SUB
+0 2 -> MUL
+0 3 -> DIV
+
+1 0 -> MIN
+1 1 -> MAX
+1 2 -> MOD
+1 3 -> NOT
+
+2 0 -> LOAD
+2 1 -> STORE
+2 2 -> COPY
+2 3 -> HLT
+
+3 0 -> CALL
+3 1 -> JMP
+3 2 -> JCMP
+3 3 -> RET
+"""
