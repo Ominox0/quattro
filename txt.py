@@ -147,8 +147,9 @@ class RAM3:
         self.r1 = RAM2()
         self.r2 = RAM2()
         self.r3 = RAM2()
+        self.C = COUNTER3()
 
-    def run(self, Adr0, Adr1, Adr2, Set, Value):
+    def _run(self, Adr0, Adr1, Adr2, Set, Value):
         A, B, C, D = Adr4(Adr2, Set)
 
         O0 = self.r0.run(Adr0, Adr1, Value, A)
@@ -163,6 +164,19 @@ class RAM3:
         OUT3 = MIN(O3, EQ(Adr2, 3))
 
         return MAX(MAX(OUT0, OUT1), MAX(OUT2, OUT3))
+    def advGet(self, st):
+        ADR0, ADR1, ADR2 = self.C.run(0, 0, 0)
+
+        instr1 = self._run(ADR0, ADR1, ADR2, 0, 0)
+
+        ADR0, ADR1, ADR2 = self.C.run(st, 0, 0)
+
+    def run(self, adrSt0, adrSt1, adrSt2, Set, Val):
+        ADR0, ADR1, ADR2 = self.C.run(0, 0, 0)
+
+        instr1 = self._run(ADR0, ADR1, ADR2, 0, 0)
+
+        ADR0, ADR1, ADR2 = self.C.run(EQ(Set, 0), 0, 0)
 
 
 def Adr4(Adr, Set):
@@ -420,7 +434,6 @@ def PC():
     2 3
     """
 
-    _COUNTER = COUNTER3()
     _RAM = RAM3()
     _RAM.run(0, 0, 0, 3, 2)
     _RAM.run(1, 0, 0, 3, 0)
@@ -452,7 +465,6 @@ def PC():
     _CPU = CPU(_VAR_REG, _FLAG_REG)
 
     while _FLAG_REG.run(3, 3, 0, 0) == 0:
-        ADR0, ADR1, ADR2 = _COUNTER.run(1, 0, 0)
         instr0, instr1, RN0, RN1, A, B = _RAM.run(ADR0, ADR1, ADR2, 0, 0)
         _CPU.run(instr0, instr1, RN0, RN1, A, B)
 
