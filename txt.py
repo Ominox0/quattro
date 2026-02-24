@@ -130,6 +130,17 @@ class RAM2:
         return MAX(MAX(OUT0, OUT1), MAX(OUT2, OUT3))
 
 
+def ROM_INSTR(instr0, instr1):
+    A, B, C, D = Adr4(Instr0, 3)
+    A1, B1, C1, D1 = Adr4(Instr1, C)
+
+    R = MAX(MAX(MAX(A, B), MAX(A1, B1)), C1)
+
+    Q1 = MIN(R, 1)
+
+    return MAX(Q1, 0), 0
+
+
 class RAM3:
     def __init__(self):
         self.r0 = RAM2()
@@ -352,12 +363,17 @@ class COUNTER3:
         self.c2 = COUNTER()
         self.c3 = COUNTER()
 
-    def run(self):
-        A1, B1 = self.c1.run(1)
+    def run(self, add0, add1, add2):
+        A1, B1 = self.c1.run(add0)
         A2, B2 = self.c2.run(A1)
         _, B3 = self.c3.run(A2)
 
-        return B3, B2, B1
+        A2, B2 = self.c2.run(add1)
+        _, B3 = self.c3.run(A2)
+
+        _, B3 = self.c3.run(add2)
+
+        return B1, B2, B3
 
 
 class CPU:
@@ -436,7 +452,7 @@ def PC():
     _CPU = CPU(_VAR_REG, _FLAG_REG)
 
     while _FLAG_REG.run(3, 3, 0, 0) == 0:
-        ADR0, ADR1, ADR2 = _COUNTER.run()
+        ADR0, ADR1, ADR2 = _COUNTER.run(1, 0, 0)
         instr0, instr1, RN0, RN1, A, B = _RAM.run(ADR0, ADR1, ADR2, 0, 0)
         _CPU.run(instr0, instr1, RN0, RN1, A, B)
 
